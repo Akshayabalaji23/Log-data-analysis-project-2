@@ -1,4 +1,3 @@
-# Log-data-analysis-project-2
 import re
 from datetime import datetime
 import pymongo
@@ -144,7 +143,7 @@ def run_queries():
     if mydb.is_connected():
         cursor = mydb.cursor()
 
-        # Example queries
+        # Example query1
         cursor.execute("SELECT DISTINCT email FROM user_history")
         print("Unique Email Addresses:", cursor.fetchall())
 
@@ -154,6 +153,80 @@ def run_queries():
             GROUP BY day
         """)
         print("Emails Per Day:", cursor.fetchall())
+
+        # Query 2: Count the number of emails received per day
+        cursor.execute("""
+            SELECT DATE(date) AS day, COUNT(*) 
+            FROM user_history 
+            GROUP BY day;
+        """)
+        print("Emails Per Day:", cursor.fetchall())
+
+        # Query 3: Find the first and last email date for each email address
+        cursor.execute("""
+            SELECT email, MIN(date) AS first_date, MAX(date) AS last_date
+            FROM user_history
+            GROUP BY email;
+        """)
+        print("First and Last Email Date per Email:", cursor.fetchall())
+
+        # Query 4: Count the total number of emails from each domain
+        cursor.execute("""
+            SELECT SUBSTRING_INDEX(email, '@', -1) AS domain, COUNT(*)
+            FROM user_history
+            GROUP BY domain;
+        """)
+        print("Emails Per Domain:", cursor.fetchall())
+
+        # Query 5: Count the Total Number of Emails from Each Domain
+        cursor.execute("""   
+            SELECT SUBSTRING_INDEX(email, '@', -1) AS domain, COUNT(*) AS email_count
+            FROM user_history
+            GROUP BY domain
+            ORDER BY email_count DESC;
+        """)
+        print("Total Emails from Each Domain:", cursor.fetchall())
+
+        # Query 6: Find the Top 5 Email Addresses That Sent the Most Emails
+        cursor.execute("""   
+            SELECT email, COUNT(*) AS email_count
+            FROM user_history
+            GROUP BY email
+            ORDER BY email_count DESC
+            LIMIT 5;
+        """)
+        print("Top 5 Email Addresses that sent the most Emails:", cursor.fetchall())
+
+        # Query 7: Find Emails Sent on a Specific Date (e.g., 2025-01-01)
+        cursor.execute("""   
+            SELECT email, date
+            FROM user_history
+            WHERE DATE(date) = '2025-01-01';
+        """)
+        print("Emails Sent on a Specific Date:", cursor.fetchall())
+
+        # Query 8: Get the Total Number of Unique Domains
+        cursor.execute("""   
+            SELECT COUNT(DISTINCT SUBSTRING_INDEX(email, '@', -1)) AS unique_domains
+            FROM user_history;
+        """)
+        print("Total Number of Unique Domains:", cursor.fetchall())
+
+        # Query 9: Get the Earliest and Latest Email Dates in the Table
+        cursor.execute("""   
+            SELECT MIN(date) AS earliest_email, MAX(date) AS latest_email
+            FROM user_history;
+        """)
+        print("Earliest and Latest Email Dates in the Table:", cursor.fetchall())
+
+        # Query 10: Find the Number of Emails Sent Per Hour
+        cursor.execute("""   
+            SELECT HOUR(date) AS hour, COUNT(*) AS email_count
+            FROM user_history
+            GROUP BY hour
+            ORDER BY hour ASC;
+        """)
+        print("Number of Emails Sent Per Hour:", cursor.fetchall())
 
         mydb.close()
     else:
