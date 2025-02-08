@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 import pymongo
 import mysql.connector
-
 # Step 1: Extract Emails
 def extract_emails(file_path):
     """
